@@ -1,4 +1,6 @@
+using Medusa.Website.Models;
 using Medusa.Website.Services;
+using System.Text.Json;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,5 +26,13 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapRazorPages();
+
+// the function below creates an endpoint at 'ourwebsite.com/products' and returns a list of products as a JSON
+app.MapGet("/products", (context) => {
+    var products = app.Services.GetService<JsonFileProductsService>().GetProducts();
+    var json = JsonSerializer.Serialize<IEnumerable<Product>>(products);
+
+    return context.Response.WriteAsJsonAsync(json);
+});
 
 app.Run();
